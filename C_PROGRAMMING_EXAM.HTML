@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Class Test First</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #89f7fe, #66a6ff);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      background: white;
+    }
+
+    .btn-custom {
+      background: linear-gradient(45deg, #ff6b6b, #f06595);
+      border: none;
+      color: white;
+      transition: all 0.4s ease;
+      border-radius: 30px;
+      padding: 10px 20px;
+    }
+
+    .btn-custom:hover {
+      transform: scale(1.1);
+      background: linear-gradient(45deg, #845ec2, #d65db1);
+      box-shadow: 0 0 10px #d65db1;
+    }
+
+    .timer {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff6b6b;
+      text-shadow: 1px 1px 2px #333;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .fixed-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .fixed-title h2, .fixed-title h4 {
+      margin: 0;
+    }
+
+    .note {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Admin Login Page -->
+  <div id="adminLoginPage" class="text-center">
+    <div class="fixed-title">
+      <h2 class="text-primary fw-bold">DISHA COMPUTER INSTITUTE</h2>
+      <h4 class="text-secondary">JAYSINGPUR BRANCH</h4>
+      <p class="fw-bold mt-2">ADMINISTRATOR LOGIN</p>
+    </div>
+    <div class="card p-5">
+      <div class="mb-3 text-start">
+        <label for="adminID" class="form-label">Admin ID</label>
+        <input type="text" class="form-control" id="adminID" placeholder="Enter Admin ID" required>
+      </div>
+      <div class="mb-4 text-start">
+        <label for="adminPassword" class="form-label">Password</label>
+        <input type="password" class="form-control" id="adminPassword" placeholder="Enter Password" required>
+      </div>
+      <button class="btn btn-custom w-100" onclick="adminLogin()">Login as Admin</button>
+    </div>
+  </div>
+
+  <!-- Student Login Page -->
+  <div id="studentLoginPage" class="hidden text-center">
+    <div class="fixed-title">
+      <h2 class="text-primary fw-bold">DISHA COMPUTER INSTITUTE</h2>
+      <h4 class="text-secondary">JAYSINGPUR BRANCH</h4>
+      <p class="fw-bold mt-2">Exam Name: CLASS TEST EXAM</p>
+      <p class="fw-bold">Exam Duration: 15 MINUTES</p>
+        <p class="fw-bold">Exam Name: C Programming</p>
+    </div>
+    <div class="card p-5">
+      <div class="mb-3 text-start">
+        <label for="studentName" class="form-label">Student Name</label>
+        <input type="text" class="form-control" id="studentName" placeholder="Enter your name" required>
+      </div>
+      <div class="mb-4 text-start">
+        <label for="formNumber" class="form-label">Form Number</label>
+        <input type="text" class="form-control" id="formNumber" placeholder="Enter your form number" required>
+      </div>
+      <button class="btn btn-custom w-100" onclick="startExam()">Login & Start Exam</button>
+    </div>
+    <div class="note mt-3">
+      <ul class="text-start mb-0">
+        <li>⚡ Do not refresh the page during exam.</li>
+        <li>⚡ All questions are compulsory.</li>
+        <li>⚡ Each question carries 5 marks.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Exam Page -->
+  <div id="examPage" class="hidden">
+    <div class="fixed-title">
+      <h2 class="text-primary fw-bold">DISHA COMPUTER INSTITUTE</h2>
+      <h4 class="text-secondary">JAYSINGPUR BRANCH</h4>
+      <p class="fw-bold mt-2">Exam Name: C PROGRAMMING </p>
+      <p class="fw-bold">Exam Duration: 15 MINUTES</p>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-primary fw-bold">C PROGRAMMING TEST</h4>
+      <div class="timer" id="timer">15:00</div>
+    </div>
+    <div class="note mb-3">
+      <ul class="text-start mb-0">
+        <li>⚡ Do not refresh the page during exam.</li>
+        <li>⚡ <b>All questions are compulsory.<b></li>
+        <li>⚡ Each question carries 5 marks.</li>
+      </ul>
+    </div>
+    <form id="examForm">
+      <div id="questionContainer"></div>
+
+      <div class="d-flex justify-content-between my-4">
+        <button type="button" class="btn btn-custom" onclick="prevQuestion()">Previous</button>
+        <button type="button" class="btn btn-custom" onclick="saveAnswerAndNext()">Save & Next</button>
+        <button type="button" class="btn btn-custom" onclick="nextQuestion()">Next</button>
+      </div>
+
+      <div class="text-center">
+        <button id="submitBtn" type="button" class="btn btn-success hidden" onclick="submitExam()">Submit Exam</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Result Page -->
+  <div id="resultPage" class="hidden text-center">
+    <h2 class="text-success fw-bold">Successfully completed the exam!</h2>
+    <p class="mt-3 fs-5">Thank you for participating!</p>
+    <button class="btn btn-custom mt-4" onclick="downloadResult()">Download Result PDF</button>
+  </div>
+
+</div>
+
+<script>
+  const adminID = "admin";
+  const adminPassword = "1234";
+
+const questions = [
+  { q: "Who is the father of C language?", options: ["Bjarne Stroustrup", "James Gosling", "Dennis Ritchie", "Guido van Rossum"], answer: 2 },
+  { q: "Which symbol is used to denote a preprocessor directive?", options: ["@", "$", "#", "%"], answer: 2 },
+  { q: "Which data type is used to store a single character?", options: ["char", "int", "float", "double"], answer: 0 },
+  { q: "What is the correct syntax to print something in C?", options: ["echo()", "print()", "printf()", "write()"], answer: 2 },
+  { q: "Which keyword is used to define a function in C?", options: ["function", "fun", "define", "None of the above"], answer: 3 },
+  { q: "Which of the following is a valid variable name?", options: ["int", "123name", "_value", "void"], answer: 2 },
+  { q: "Which operator is used for assignment in C?", options: ["==", "=", ":", "::"], answer: 1 },
+  { q: "What is the output of: printf(\"%d\", 10 + 5);", options: ["10", "15", "105", "error"], answer: 1 },
+  { q: "Which loop is guaranteed to execute at least once?", options: ["for", "while", "do-while", "None"], answer: 2 },
+  { q: "What is the default return type of a function if not specified?", options: ["int", "void", "float", "char"], answer: 0 },
+  { q: "Which header file is needed for printf()?", options: ["stdlib.h", "conio.h", "stdio.h", "math.h"], answer: 2 },
+  { q: "Which function is used to take input in C?", options: ["scanf()", "input()", "cin>>", "gets()"], answer: 0 },
+  { q: "Which of the following is not a valid data type in C?", options: ["int", "float", "real", "char"], answer: 2 },
+  { q: "Which operator is used to compare two values?", options: ["=", "==", "<>", "><"], answer: 1 },
+  { q: "What is the extension of a C file?", options: [".txt", ".c", ".cpp", ".java"], answer: 1 },
+  { q: "Which of these is a logical operator?", options: ["&&", "||", "!", "All of the above"], answer: 3 },
+  { q: "What is the size of an int on most systems?", options: ["2 bytes", "4 bytes", "8 bytes", "Depends on compiler"], answer: 3 },
+  { q: "Which keyword is used to define constants?", options: ["define", "const", "constant", "static"], answer: 1 },
+  { q: "Which function is used to find the length of a string?", options: ["len()", "length()", "strlen()", "size()"], answer: 2 },
+  { q: "Which loop is used when the number of iterations is known?", options: ["while", "do-while", "for", "switch"], answer: 2 },
+  { q: "Which function ends a program in C?", options: ["exit()", "end()", "terminate()", "close()"], answer: 0 },
+  { q: "What is the output of: printf(\"%c\", 65);", options: ["65", "A", "a", "Error"], answer: 1 },
+  { q: "How are comments written in C?", options: ["# comment", "// comment", "-- comment", "/* comment"], answer: 3 },
+  { q: "Which header is used for mathematical functions?", options: ["math.h", "stdio.h", "stdlib.h", "conio.h"], answer: 0 },
+  { q: "What is the value of a uninitialized static int?", options: ["0", "Garbage value", "1", "Error"], answer: 0 },
+  { q: "Which function is used to allocate memory?", options: ["alloc()", "malloc()", "calloc()", "Both 2 and 3"], answer: 3 },
+  { q: "What does return 0 in main() signify?", options: ["Success", "Failure", "Infinite loop", "None"], answer: 0 },
+  { q: "What is used to access array elements?", options: ["()", "[]", "{}", "<>"], answer: 1 },
+  { q: "Which of the following is not a loop in C?", options: ["for", "while", "repeat", "do-while"], answer: 2 },
+  { q: "Which keyword is used to stop a loop?", options: ["stop", "exit", "break", "end"], answer: 2 }
+];
+
+
+
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let selectedAnswers = {};
+  let timer;
+  let timeLeft = 15 * 60;
+  let studentName = '';
+
+  function adminLogin() {
+    const id = document.getElementById('adminID').value.trim();
+    const pwd = document.getElementById('adminPassword').value.trim();
+    if (id === adminID && pwd === adminPassword) {
+      document.getElementById('adminLoginPage').classList.add('hidden');
+      document.getElementById('studentLoginPage').classList.remove('hidden');
+    } else {
+      alert('Invalid Admin ID or Password!');
+    }
+  }
+
+  function startExam() {
+    studentName = document.getElementById('studentName').value.trim();
+    const formNumber = document.getElementById('formNumber').value.trim();
+    if (!studentName || !formNumber) {
+      alert('Please fill all fields.');
+      return;
+    }
+    document.getElementById('studentLoginPage').classList.add('hidden');
+    document.getElementById('examPage').classList.remove('hidden');
+    shuffledQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 20);
+    startTimer();
+    displayQuestion();
+  }
+
+  function displayQuestion() {
+    const q = shuffledQuestions[currentQuestionIndex];
+    const container = document.getElementById('questionContainer');
+    container.innerHTML = `
+      <h5 class="mb-3">Q${currentQuestionIndex + 1}: ${q.q}</h5>
+      ${q.options.map((opt, i) => `
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="option" id="option${i}" value="${i}" ${selectedAnswers[currentQuestionIndex] == i ? "checked" : ""} onchange="saveAnswer()">
+          <label class="form-check-label" for="option${i}">${opt}</label>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  function saveAnswer() {
+    const selected = document.querySelector('input[name="option"]:checked');
+    if (selected) {
+      selectedAnswers[currentQuestionIndex] = parseInt(selected.value);
+    }
+    checkAllAnswered();
+  }
+
+  function saveAnswerAndNext() {
+    saveAnswer();
+    nextQuestion();
+  }
+
+  function nextQuestion() {
+    if (currentQuestionIndex < shuffledQuestions.length - 1) {
+      currentQuestionIndex++;
+      displayQuestion();
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      displayQuestion();
+    }
+  }
+
+  function startTimer() {
+    updateTimer();
+    timer = setInterval(() => {
+      timeLeft--;
+      updateTimer();
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        submitExam();
+      }
+    }, 1000);
+  }
+
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
+  function checkAllAnswered() {
+    if (Object.keys(selectedAnswers).length === 20) {
+      document.getElementById('submitBtn').classList.remove('hidden');
+    }
+  }
+
+  function submitExam() {
+    clearInterval(timer);
+    let score = 0;
+    shuffledQuestions.forEach((q, index) => {
+      if (selectedAnswers[index] === q.answer) {
+        score++;
+      }
+    });
+    sessionStorage.setItem('studentScore', score);
+    document.getElementById('examPage').classList.add('hidden');
+    document.getElementById('resultPage').classList.remove('hidden');
+  }
+
+  function downloadResult() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const score = sessionStorage.getItem('studentScore') * 5;
+    const percentage = (score / 100) * 100;
+    const now = new Date();
+    const grade = percentage > 80 ? 'A Grade' :
+                  percentage >= 60 ? 'B Grade' :
+                  percentage >= 40 ? 'C Grade' :
+                  percentage >= 35 ? 'D Grade' :
+                  'Fail';
+
+    doc.setFontSize(20);
+    doc.text("DISHA COMPUTER INSTITUTE", 40, 20);
+    doc.setFontSize(14);
+    doc.text(`Test Name: TEST EXAM`, 20, 40);
+    doc.text(`Date & Time: ${now.toLocaleString()}`, 20, 50);
+    doc.text(`Student Name: ${studentName}`, 20, 60);
+    doc.text(`Obtained Marks: ${score} / 100`, 20, 70);
+    doc.text(`Grade: ${grade}`, 20, 80);
+    doc.setFontSize(12);
+    doc.text("Thanks For Participate You Have Complete The Exam!", 20, 100);
+
+    doc.save(`${studentName.replace(/\s+/g, '_')}_Result.pdf`);
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Basic Computer Demo Exam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #89f7fe, #66a6ff);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      background: white;
+    }
+
+    .btn-custom {
+      background: linear-gradient(45deg, #ff6b6b, #f06595);
+      border: none;
+      color: white;
+      transition: all 0.4s ease;
+      border-radius: 30px;
+      padding: 10px 20px;
+    }
+
+    .btn-custom:hover {
+      transform: scale(1.1);
+      background: linear-gradient(45deg, #845ec2, #d65db1);
+      box-shadow: 0 0 10px #d65db1;
+    }
+
+    .timer {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff6b6b;
+      text-shadow: 1px 1px 2px #333;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .fixed-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .fixed-title h2, .fixed-title h4 {
+      margin: 0;
+    }
+
+    .note {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Admin Login Page -->
+  <div id="adminLoginPage" class="text-center">
+    <div class="fixed-title">
+      <h2 class="text-primary fw-bold">DISHA COMPUTER INSTITUTE</h2>
+      <h4 class="text-secondary">JAYSINGPUR BRANCH</h4>
+      <p class="fw-bold mt-2">ADMINISTRATOR LOGIN</p>
+    </div>
+    <div class="card p-5">
+      <div class="mb-3 text-start">
+        <label for="adminID" class="form-label">Admin ID</label>
+        <input type="text" class="form-control" id="adminID" placeholder="Enter Admin ID" required>
+      </div>
+      <div class="mb-4 text-start">
+        <label for="adminPassword" class="form-label">Password</label>
+        <input type="password" class="form-control" id="adminPassword" placeholder="Enter Password" required>
+      </div>
+      <button class="btn btn-custom w-100" onclick="adminLogin()">Login as Admin</button>
+    </div>
+  </div>
+
+  <!-- Student Login Page -->
+  <div id="studentLoginPage" class="hidden text-center">
+    <div class="fixed-title">
+      <h2 class="text-primary fw-bold">DISHA COMPUTER INSTITUTE</h2>
+      <h4 class="text-secondary">JAYSINGPUR BRANCH</h4>
+      <p class="fw-bold mt-2">Exam Name: TEST EXAM</p>
+      <p class="fw-bold">Exam Duration: 15 MINUTES</p>
+    </div>
+    <div class="card p-5">
+      <div class="mb-3 text-start">
+        <label for="studentName" class="form-label">Student Name</label>
+        <input type="text" class="form-control" id="studentName" placeholder="Enter your name" required>
+      </div>
+      <div class="mb-4 text-start">
+        <label for="formNumber" class="form-label">Form Number</label>
+        <input type="text" class="form-control" id="formNumber" placeholder="Enter your form number" required>
+      </div>
+      <button class="btn btn-custom w-100" onclick="startExam()">Login & Start Exam</button>
+    </div>
+    <div class="note mt-3">
+      <ul class="text-start mb-0">
+        <li>⚡ Do not refresh the page during exam.</li>
+        <li>⚡ All questions are compulsory.</li>
+        <li>⚡ Each question carries 5 marks.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Exam Page -->
+  <div id="examPage" class="hidden">
+    <div class="fixed-title">
+      <h2 class="text-primary fw-bold">DISHA COMPUTER INSTITUTE</h2>
+      <h4 class="text-secondary">JAYSINGPUR BRANCH</h4>
+      <p class="fw-bold mt-2">Exam Name: TEST EXAM</p>
+      <p class="fw-bold">Exam Duration: 15 MINUTES</p>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-primary fw-bold">Basic Computer Knowledge Test</h4>
+      <div class="timer" id="timer">15:00</div>
+    </div>
+    <div class="note mb-3">
+      <ul class="text-start mb-0">
+        <li>⚡ Do not refresh the page during exam.</li>
+        <li>⚡ All questions are compulsory.</li>
+        <li>⚡ Each question carries 5 marks.</li>
+      </ul>
+    </div>
+    <form id="examForm">
+      <div id="questionContainer"></div>
+
+      <div class="d-flex justify-content-between my-4">
+        <button type="button" class="btn btn-custom" onclick="prevQuestion()">Previous</button>
+        <button type="button" class="btn btn-custom" onclick="saveAnswerAndNext()">Save & Next</button>
+        <button type="button" class="btn btn-custom" onclick="nextQuestion()">Next</button>
+      </div>
+
+      <div class="text-center">
+        <button id="submitBtn" type="button" class="btn btn-success hidden" onclick="submitExam()">Submit Exam</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Result Page -->
+  <div id="resultPage" class="hidden text-center">
+    <h2 class="text-success fw-bold">Successfully completed the exam!</h2>
+    <p class="mt-3 fs-5">Thank you for participating!</p>
+    <button class="btn btn-custom mt-4" onclick="downloadResult()">Download Result PDF</button>
+  </div>
+
+</div>
+
+<script>
+  const adminID = "admin";
+  const adminPassword = "1234";
+
+const questions = [
+  { q: "What is the full form of ERP in Tally?", options: ["Enterprise Resource Planning", "Easy Resource Process", "Enterprise Reliable Planning", "Electronic Record Planning"], answer: 0 },
+  { q: "Which shortcut is used to create a new company in Tally Prime?", options: ["Alt + F1", "Alt + F3", "Alt + C", "Ctrl + A"], answer: 1 },
+  { q: "In Tally, which voucher type is used to record a sale?", options: ["Receipt", "Payment", "Sales", "Journal"], answer: 2 },
+  { q: "What does a ledger represent in Tally?", options: ["Group of transactions", "Single transaction", "Accounting head", "Bank entry"], answer: 2 },
+  { q: "How many types of accounting vouchers are there in Tally Prime?", options: ["5", "7", "9", "11"], answer: 2 },
+  { q: "Which key is used to shut a company in Tally?", options: ["Alt + F1", "Ctrl + F1", "Alt + F4", "Ctrl + Q"], answer: 0 },
+  { q: "What is the primary group of 'Cash' ledger?", options: ["Bank Accounts", "Cash-in-Hand", "Sundry Debtors", "Capital Account"], answer: 1 },
+  { q: "Which voucher is used to record cash received from customers?", options: ["Payment Voucher", "Sales Voucher", "Receipt Voucher", "Contra Voucher"], answer: 2 },
+  { q: "Tally Prime is developed by which company?", options: ["Microsoft", "Google", "Tally Solutions", "Oracle"], answer: 2 },
+  { q: "Which report shows the financial position of a business in Tally?", options: ["Trial Balance", "Stock Summary", "Balance Sheet", "Ledger"], answer: 2 },
+  { q: "What does F11 key do in Tally?", options: ["Company Features", "Inventory Reports", "Shut Company", "Voucher Type"], answer: 0 },
+  { q: "Which option is used to enable GST in Tally?", options: ["F12 Configuration", "Company Features (F11)", "Gateway of Tally", "Accounts Info"], answer: 1 },
+  { q: "What is the use of Journal Voucher in Tally?", options: ["Cash Transactions", "Adjusting Entries", "Sales Entry", "Purchase Entry"], answer: 1 },
+  { q: "In Tally, which group does the 'Capital Account' belong to?", options: ["Assets", "Expenses", "Income", "Liabilities"], answer: 3 },
+  { q: "Which ledger group does 'Rent Paid' fall under?", options: ["Indirect Incomes", "Direct Incomes", "Indirect Expenses", "Current Liabilities"], answer: 2 },
+  { q: "Which is the shortcut key to view Day Book in Tally?", options: ["F4", "F2", "Ctrl + F4", "Alt + F5"], answer: 3 },
+  { q: "Which ledger group is used for Creditors?", options: ["Sundry Creditors", "Sundry Debtors", "Capital Account", "Fixed Assets"], answer: 0 },
+  { q: "Which is a statutory feature in Tally?", options: ["Inventory", "Banking", "GST", "Payroll"], answer: 2 },
+  { q: "Which voucher is used to record bank deposit in Tally?", options: ["Payment", "Contra", "Journal", "Receipt"], answer: 1 },
+  { q: "In Tally, what does F12 key do?", options: ["Print Settings", "Configure Settings", "Features Enable", "Help"], answer: 1 },
+  { q: "What is accounting?", options: ["A record of stock only", "Recording of financial transactions", "A computer process", "Preparing payrolls"], answer: 1 },
+  { q: "Which equation is the foundation of accounting?", options: ["Assets = Liabilities + Capital", "Income = Expenses + Drawings", "Sales = Purchases", "Profit = Income - Expenses"], answer: 0 },
+  { q: "What does a balance sheet show?", options: ["Profit and loss", "Company’s income", "Financial position", "Bank transactions"], answer: 2 },
+  { q: "Which account is considered a real account?", options: ["Cash Account", "Sales Account", "Rent Account", "Capital Account"], answer: 0 },
+  { q: "What type of account is a creditor?", options: ["Personal Account", "Real Account", "Nominal Account", "None of these"], answer: 0 },
+  { q: "Which book is known as the original book of entry?", options: ["Ledger", "Journal", "Trial Balance", "Cash Book"], answer: 1 },
+  { q: "Which side is the debit side in a ledger?", options: ["Left", "Right", "Top", "Bottom"], answer: 0 },
+  { q: "What is recorded on the credit side of a cash book?", options: ["Cash Receipts", "Cash Payments", "Bank Deposits", "Bank Withdrawals"], answer: 1 },
+  { q: "Which document is used to prove a business transaction?", options: ["Voucher", "Invoice", "Statement", "Cheque"], answer: 0 },
+  { q: "What is the main objective of financial accounting?", options: ["Tax filing", "Decision making", "Providing financial information", "Increasing sales"], answer: 2 },
+  { q: "Which account records salaries paid?", options: ["Asset", "Liability", "Income", "Expense"], answer: 3 },
+  { q: "Drawings reduce which element in the accounting equation?", options: ["Assets", "Liabilities", "Capital", "Profit"], answer: 2 },
+  { q: "Which statement shows profit or loss?", options: ["Balance Sheet", "Cash Flow Statement", "Journal", "Profit and Loss Account"], answer: 3 },
+  { q: "What type of account is 'Rent Paid'?", options: ["Real Account", "Nominal Account", "Personal Account", "Capital Account"], answer: 1 },
+  { q: "Which account is affected when goods are sold on credit?", options: ["Cash", "Debtors", "Sales", "Capital"], answer: 1 },
+  { q: "Which of the following is a liability?", options: ["Furniture", "Debtors", "Creditors", "Cash"], answer: 2 },
+  { q: "The process of transferring entries from journal to ledger is called?", options: ["Posting", "Balancing", "Summarizing", "Recording"], answer: 0 },
+  { q: "Which account is debited when salary is paid in cash?", options: ["Salary A/c", "Cash A/c", "Capital A/c", "Bank A/c"], answer: 0 },
+  { q: "Goodwill is classified under which type of asset?", options: ["Tangible", "Fictitious", "Intangible", "Current"], answer: 2 },
+  { q: "What is the main rule for personal accounts?", options: ["Debit all expenses", "Credit the giver", "Debit the receiver", "Both B and C"], answer: 3 }
+
+];
+
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let selectedAnswers = {};
+  let timer;
+  let timeLeft = 15 * 60;
+  let studentName = '';
+
+  function adminLogin() {
+    const id = document.getElementById('adminID').value.trim();
+    const pwd = document.getElementById('adminPassword').value.trim();
+    if (id === adminID && pwd === adminPassword) {
+      document.getElementById('adminLoginPage').classList.add('hidden');
+      document.getElementById('studentLoginPage').classList.remove('hidden');
+    } else {
+      alert('Invalid Admin ID or Password!');
+    }
+  }
+
+  function startExam() {
+    studentName = document.getElementById('studentName').value.trim();
+    const formNumber = document.getElementById('formNumber').value.trim();
+    if (!studentName || !formNumber) {
+      alert('Please fill all fields.');
+      return;
+    }
+    document.getElementById('studentLoginPage').classList.add('hidden');
+    document.getElementById('examPage').classList.remove('hidden');
+    shuffledQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 20);
+    startTimer();
+    displayQuestion();
+  }
+
+  function displayQuestion() {
+    const q = shuffledQuestions[currentQuestionIndex];
+    const container = document.getElementById('questionContainer');
+    container.innerHTML = `
+      <h5 class="mb-3">Q${currentQuestionIndex + 1}: ${q.q}</h5>
+      ${q.options.map((opt, i) => `
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="option" id="option${i}" value="${i}" ${selectedAnswers[currentQuestionIndex] == i ? "checked" : ""} onchange="saveAnswer()">
+          <label class="form-check-label" for="option${i}">${opt}</label>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  function saveAnswer() {
+    const selected = document.querySelector('input[name="option"]:checked');
+    if (selected) {
+      selectedAnswers[currentQuestionIndex] = parseInt(selected.value);
+    }
+    checkAllAnswered();
+  }
+
+  function saveAnswerAndNext() {
+    saveAnswer();
+    nextQuestion();
+  }
+
+  function nextQuestion() {
+    if (currentQuestionIndex < shuffledQuestions.length - 1) {
+      currentQuestionIndex++;
+      displayQuestion();
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      displayQuestion();
+    }
+  }
+
+  function startTimer() {
+    updateTimer();
+    timer = setInterval(() => {
+      timeLeft--;
+      updateTimer();
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        submitExam();
+      }
+    }, 1000);
+  }
+
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
+  function checkAllAnswered() {
+    if (Object.keys(selectedAnswers).length === 20) {
+      document.getElementById('submitBtn').classList.remove('hidden');
+    }
+  }
+
+  function submitExam() {
+    clearInterval(timer);
+    let score = 0;
+    shuffledQuestions.forEach((q, index) => {
+      if (selectedAnswers[index] === q.answer) {
+        score++;
+      }
+    });
+    sessionStorage.setItem('studentScore', score);
+    document.getElementById('examPage').classList.add('hidden');
+    document.getElementById('resultPage').classList.remove('hidden');
+  }
+
+  function downloadResult() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const score = sessionStorage.getItem('studentScore') * 5;
+    const percentage = (score / 100) * 100;
+    const now = new Date();
+    const grade = percentage > 80 ? 'A Grade' :
+                  percentage >= 60 ? 'B Grade' :
+                  percentage >= 40 ? 'C Grade' :
+                  percentage >= 35 ? 'D Grade' :
+                  'Fail';
+
+    doc.setFontSize(20);
+    doc.text("DISHA COMPUTER INSTITUTE", 40, 20);
+    doc.setFontSize(14);
+    doc.text(`Test Name: TEST EXAM`, 20, 40);
+    doc.text(`Date & Time: ${now.toLocaleString()}`, 20, 50);
+    doc.text(`Student Name: ${studentName}`, 20, 60);
+    doc.text(`Obtained Marks: ${score} / 100`, 20, 70);
+    doc.text(`Grade: ${grade}`, 20, 80);
+    doc.setFontSize(12);
+    doc.text("Thank you and best wishes for your future!", 20, 100);
+
+    doc.save(`${studentName.replace(/\s+/g, '_')}_Result.pdf`);
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>

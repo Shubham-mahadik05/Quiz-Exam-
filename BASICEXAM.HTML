@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Basic Computer Demo Exam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Local Bootstrap -->
+  <link href="bootstrap.min.css" rel="stylesheet">
+
+  <!-- Local jsPDF -->
+  <script src="jspdf.umd.min.js"></script>
+
+  <style>
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #89f7fe, #66a6ff);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      background: white;
+    }
+
+    .btn-custom {
+      background: linear-gradient(45deg, #ff6b6b, #f06595);
+      border: none;
+      color: white;
+      transition: all 0.4s ease;
+      border-radius: 30px;
+      padding: 10px 20px;
+    }
+
+    .btn-custom:hover {
+      transform: scale(1.1);
+      background: linear-gradient(45deg, #845ec2, #d65db1);
+      box-shadow: 0 0 10px #d65db1;
+    }
+
+    .timer {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff6b6b;
+      text-shadow: 1px 1px 2px #333;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .fixed-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .fixed-title h2, .fixed-title h4 {
+      margin: 0;
+    }
+
+    .note {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <!-- Admin Login Page -->
+  <div id="adminLoginPage" class="text-center">
+    <div class="fixed-title">
+      <h2 class="text-primary fw-bold">DISHA COMPUTER INSTITUTE</h2>
+      <h4 class="text-secondary">JAYSINGPUR BRANCH</h4>
+      <p class="fw-bold mt-2">ADMINISTRATOR LOGIN</p>
+    </div>
+    <div class="card p-5">
+      <div class="mb-3 text-start">
+        <label for="adminID" class="form-label">Admin ID</label>
+        <input type="text" class="form-control" id="adminID" placeholder="Enter Admin ID" required>
+      </div>
+      <div class="mb-4 text-start">
+        <label for="adminPassword" class="form-label">Password</label>
+        <input type="password" class="form-control" id="adminPassword" placeholder="Enter Password" required>
+      </div>
+      <button class="btn btn-custom w-100" onclick="adminLogin()">Login as Admin</button>
+    </div>
+  </div>
+
+  <!-- Student Login Page -->
+  <div id="studentLoginPage" class="hidden text-center">
+    <div class="fixed-title">
+      <h2 class="text-primary fw-bold">DISHA COMPUTER INSTITUTE</h2>
+      <h4 class="text-secondary">JAYSINGPUR BRANCH</h4>
+      <p class="fw-bold mt-2">Exam Name: TEST EXAM</p>
+      <p class="fw-bold">Exam Duration: 15 MINUTES</p>
+    </div>
+    <div class="card p-5">
+      <div class="mb-3 text-start">
+        <label for="studentName" class="form-label">Student Name</label>
+        <input type="text" class="form-control" id="studentName" placeholder="Enter your name" required>
+      </div>
+      <div class="mb-4 text-start">
+        <label for="formNumber" class="form-label">Form Number</label>
+        <input type="text" class="form-control" id="formNumber" placeholder="Enter your form number" required>
+      </div>
+      <button class="btn btn-custom w-100" onclick="startExam()">Login & Start Exam</button>
+    </div>
+    <div class="note mt-3">
+      <ul class="text-start mb-0">
+        <li>⚡ Do not refresh the page during exam.</li>
+        <li>⚡ All questions are compulsory.</li>
+        <li>⚡ Each question carries 5 marks.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Exam Page -->
+  <div id="examPage" class="hidden">
+    <div class="fixed-title">
+      <h2 class="text-primary fw-bold">DISHA COMPUTER INSTITUTE</h2>
+      <h4 class="text-secondary">JAYSINGPUR BRANCH</h4>
+      <p class="fw-bold mt-2">Exam Name: TEST EXAM</p>
+      <p class="fw-bold">Exam Duration: 15 MINUTES</p>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-primary fw-bold">Basic Computer Knowledge Test</h4>
+      <div class="timer" id="timer">15:00</div>
+    </div>
+    <div class="note mb-3">
+      <ul class="text-start mb-0">
+        <li>⚡ Do not refresh the page during exam.</li>
+        <li>⚡ All questions are compulsory.</li>
+        <li>⚡ Each question carries 5 marks.</li>
+      </ul>
+    </div>
+    <form id="examForm">
+      <div id="questionContainer"></div>
+
+      <div class="d-flex justify-content-between my-4">
+        <button type="button" class="btn btn-custom" onclick="prevQuestion()">Previous</button>
+        <button type="button" class="btn btn-custom" onclick="saveAnswerAndNext()">Save & Next</button>
+        <button type="button" class="btn btn-custom" onclick="nextQuestion()">Next</button>
+      </div>
+
+      <div class="text-center">
+        <button id="submitBtn" type="button" class="btn btn-success hidden" onclick="submitExam()">Submit Exam</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Result Page -->
+  <div id="resultPage" class="hidden text-center">
+    <h2 class="text-success fw-bold">Successfully completed the exam!</h2>
+    <p class="mt-3 fs-5">Thank you for participating!</p>
+    <button class="btn btn-custom mt-4" onclick="downloadResult()">Download Result PDF</button>
+  </div>
+
+</div>
+<script>
+  const adminID = "admin";
+  const adminPassword = "1234";
+
+const questions = [
+  { q: "What does CPU stand for?", options: ["Central Processing Unit", "Central Program Unit", "Computer Processing Unit", "Control Processing Unit"], answer: 0 },
+  { q: "Which device is used to input data into a computer?", options: ["Monitor", "Keyboard", "Printer", "Speaker"], answer: 1 },
+  { q: "Which of the following is not an input device?", options: ["Scanner", "Mouse", "Printer", "Keyboard"], answer: 2 },
+  { q: "Which key is used to delete text in Notepad?", options: ["Shift", "Ctrl", "Del", "Esc"], answer: 2 },
+  { q: "What is the default file extension of a Notepad file?", options: [".doc", ".txt", ".rtf", ".pdf"], answer: 1 },
+  { q: "Which key combination is used to copy text?", options: ["Ctrl + V", "Ctrl + X", "Ctrl + C", "Ctrl + Z"], answer: 2 },
+  { q: "What is the use of WordPad?", options: ["To browse the internet", "To write and edit text", "To play music", "To open system settings"], answer: 1 },
+  { q: "Which menu is used to save a file in Notepad?", options: ["Edit", "View", "File", "Format"], answer: 2 },
+  { q: "Which key combination is used to paste text?", options: ["Ctrl + C", "Ctrl + V", "Ctrl + Z", "Ctrl + X"], answer: 1 },
+  { q: "Which file extension is used by WordPad when saving rich text?", options: [".txt", ".docx", ".rtf", ".html"], answer: 2 },
+  { q: "What does RAM stand for?", options: ["Read Access Memory", "Random Access Memory", "Run All Memory", "Real-time Access Memory"], answer: 1 },
+  { q: "Which button is used to close a window?", options: ["X", "-", "□", "*"], answer: 0 },
+  { q: "Which is the main part of the computer?", options: ["Monitor", "CPU", "Mouse", "Keyboard"], answer: 1 },
+  { q: "Which program helps in typing letters or documents?", options: ["Paint", "Calculator", "WordPad", "Recycle Bin"], answer: 2 },
+  { q: "What does GUI stand for?", options: ["General User Interface", "Graphical User Interface", "Global User Interface", "Graphical Utility Interface"], answer: 1 },
+  { q: "Which of these is an operating system?", options: ["MS Paint", "Windows", "MS Word", "Tally"], answer: 1 },
+  { q: "Which key is used to undo the last action?", options: ["Ctrl + C", "Ctrl + V", "Ctrl + Z", "Ctrl + X"], answer: 2 },
+  { q: "Which software is used for drawing?", options: ["Notepad", "Paint", "WordPad", "Calculator"], answer: 1 },
+  { q: "What is a file?", options: ["A piece of hardware", "A software tool", "A collection of data", "An input device"], answer: 2 },
+  { q: "Which one is used to store data permanently?", options: ["RAM", "ROM", "Hard Disk", "Cache"], answer: 2 },
+  { q: "Which icon is used to minimize a window?", options: ["X", "-", "□", "⇧"], answer: 1 },
+  { q: "How can you change the font in WordPad?", options: ["Edit Menu", "Font Menu", "Home Tab", "File Tab"], answer: 2 },
+  { q: "Which shortcut key is used to save a file?", options: ["Ctrl + X", "Ctrl + S", "Ctrl + V", "Ctrl + A"], answer: 1 },
+  { q: "What is the function of the Enter key?", options: ["Delete line", "Insert tab", "Go to next line", "Open file"], answer: 2 },
+  { q: "Which key is used to open the Start Menu?", options: ["Shift", "Ctrl", "Alt", "Windows key"], answer: 3 },
+  { q: "Which one is an output device?", options: ["Keyboard", "Monitor", "Mouse", "Joystick"], answer: 1 },
+  { q: "Where is Notepad found in Windows?", options: ["Accessories", "Games", "Settings", "Startup"], answer: 0 },
+  { q: "Which file format does Notepad support?", options: [".exe", ".pdf", ".txt", ".jpg"], answer: 2 },
+  { q: "Which of these is a storage device?", options: ["Monitor", "Hard Disk", "Keyboard", "Speaker"], answer: 1 },
+  { q: "What does Save As do?", options: ["Saves in the same file", "Deletes file", "Creates a new file", "Saves with a new name"], answer: 3 },
+  { q: "What is the shortcut key to select all text?", options: ["Ctrl + S", "Ctrl + P", "Ctrl + C", "Ctrl + A"], answer: 3 },
+  { q: "Which key is used to delete characters to the right of the cursor?", options: ["Backspace", "Enter", "Delete", "Esc"], answer: 2 },
+  { q: "What does the Cut command do?", options: ["Removes text", "Copies text", "Saves text", "Prints text"], answer: 0 },
+  { q: "Which bar shows the title of the open document?", options: ["Menu bar", "Tool bar", "Title bar", "Status bar"], answer: 2 },
+  { q: "What is a cursor?", options: ["A blinking line", "A button", "A menu", "An icon"], answer: 0 },
+  { q: "Which key is used to print?", options: ["Ctrl + P", "Ctrl + Z", "Ctrl + V", "Ctrl + B"], answer: 0 },
+  { q: "How do you open WordPad?", options: ["From Settings", "From Control Panel", "From Start Menu", "From Task Manager"], answer: 2 },
+  { q: "Which of these lets you change text color in WordPad?", options: ["Font Group", "View Tab", "Insert Tab", "File Tab"], answer: 0 },
+  { q: "What is the function of Ctrl + X?", options: ["Copy", "Paste", "Cut", "Undo"], answer: 2 },
+  { q: "Which key do you use to move to the next line?", options: ["Shift", "Enter", "Tab", "Ctrl"], answer: 1 },
+  { q: "Where can you find 'Word Wrap' in Notepad?", options: ["File", "Edit", "Format", "View"], answer: 2 },
+  { q: "Which program is simpler: WordPad or MS Word?", options: ["WordPad", "MS Word", "Both are same", "None"], answer: 0 },
+  { q: "Which command lets you align text in WordPad?", options: ["Insert", "Paragraph", "Font", "Clipboard"], answer: 1 },
+  { q: "Which function key refreshes the screen?", options: ["F1", "F2", "F5", "F12"], answer: 2 },
+  { q: "Which device displays the output?", options: ["Mouse", "Printer", "Monitor", "Keyboard"], answer: 2 },
+  { q: "How do you open a new file in Notepad?", options: ["File > Open", "File > New", "Edit > New", "Format > New"], answer: 1 },
+  { q: "Which key is used to insert a tab space?", options: ["Ctrl", "Shift", "Tab", "Alt"], answer: 2 },
+  { q: "Which component allows communication between hardware and software?", options: ["Operating System", "CPU", "RAM", "Mouse"], answer: 0 }
+];
+
+
+  let shuffledQuestions = [];
+  let currentQuestionIndex = 0;
+  let selectedAnswers = {};
+  let timer;
+  let timeLeft = 15 * 60;
+  let studentName = '';
+
+  function adminLogin() {
+    const id = document.getElementById('adminID').value.trim();
+    const pwd = document.getElementById('adminPassword').value.trim();
+    if (id === adminID && pwd === adminPassword) {
+      document.getElementById('adminLoginPage').classList.add('hidden');
+      document.getElementById('studentLoginPage').classList.remove('hidden');
+    } else {
+      alert('Invalid Admin ID or Password!');
+    }
+  }
+
+  function startExam() {
+    studentName = document.getElementById('studentName').value.trim();
+    const formNumber = document.getElementById('formNumber').value.trim();
+    if (!studentName || !formNumber) {
+      alert('Please fill all fields.');
+      return;
+    }
+    document.getElementById('studentLoginPage').classList.add('hidden');
+    document.getElementById('examPage').classList.remove('hidden');
+    shuffledQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 20);
+    startTimer();
+    displayQuestion();
+  }
+
+  function displayQuestion() {
+    const q = shuffledQuestions[currentQuestionIndex];
+    const container = document.getElementById('questionContainer');
+    container.innerHTML = `
+      <h5 class="mb-3">Q${currentQuestionIndex + 1}: ${q.q}</h5>
+      ${q.options.map((opt, i) => `
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="option" id="option${i}" value="${i}" ${selectedAnswers[currentQuestionIndex] == i ? "checked" : ""} onchange="saveAnswer()">
+          <label class="form-check-label" for="option${i}">${opt}</label>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  function saveAnswer() {
+    const selected = document.querySelector('input[name="option"]:checked');
+    if (selected) {
+      selectedAnswers[currentQuestionIndex] = parseInt(selected.value);
+    }
+    checkAllAnswered();
+  }
+
+  function saveAnswerAndNext() {
+    saveAnswer();
+    nextQuestion();
+  }
+
+  function nextQuestion() {
+    if (currentQuestionIndex < shuffledQuestions.length - 1) {
+      currentQuestionIndex++;
+      displayQuestion();
+    }
+  }
+
+  function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      displayQuestion();
+    }
+  }
+
+  function startTimer() {
+    updateTimer();
+    timer = setInterval(() => {
+      timeLeft--;
+      updateTimer();
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        submitExam();
+      }
+    }, 1000);
+  }
+
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
+  function checkAllAnswered() {
+    if (Object.keys(selectedAnswers).length === 20) {
+      document.getElementById('submitBtn').classList.remove('hidden');
+    }
+  }
+
+  function submitExam() {
+    clearInterval(timer);
+    let score = 0;
+    shuffledQuestions.forEach((q, index) => {
+      if (selectedAnswers[index] === q.answer) {
+        score++;
+      }
+    });
+    sessionStorage.setItem('studentScore', score);
+    document.getElementById('examPage').classList.add('hidden');
+    document.getElementById('resultPage').classList.remove('hidden');
+  }
+
+  function downloadResult() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const score = sessionStorage.getItem('studentScore') * 5;
+    const percentage = (score / 100) * 100;
+    const now = new Date();
+    const grade = percentage > 80 ? 'A Grade' :
+                  percentage >= 60 ? 'B Grade' :
+                  percentage >= 40 ? 'C Grade' :
+                  percentage >= 35 ? 'D Grade' :
+                  'Fail';
+
+    doc.setFontSize(20);
+    doc.text("DISHA COMPUTER INSTITUTE", 40, 20);
+    doc.setFontSize(14);
+    doc.text(`Test Name: TEST EXAM`, 20, 40);
+    doc.text(`Date & Time: ${now.toLocaleString()}`, 20, 50);
+    doc.text(`Student Name: ${studentName}`, 20, 60);
+    doc.text(`Obtained Marks: ${score} / 100`, 20, 70);
+    doc.text(`Grade: ${grade}`, 20, 80);
+    doc.setFontSize(12);
+    doc.text("Thank you and best wishes for your future!", 20, 100);
+
+    doc.save(`${studentName.replace(/\s+/g, '_')}_Result.pdf`);
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>
