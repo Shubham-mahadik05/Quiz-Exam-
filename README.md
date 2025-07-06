@@ -1,4 +1,5 @@
-🧠 Quiz Exam Platform
+**🧠 Quiz Exam Platform
+**
 This repository contains a simple, modular web-based Quiz Exam Platform built using HTML, CSS, and JavaScript. It is designed to help students and learners test their knowledge on various topics such as Basic Computer, C Programming, and Tally Prime.
 
 📁 Project Structure
