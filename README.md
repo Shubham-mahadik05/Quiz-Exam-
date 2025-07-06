@@ -45,7 +45,7 @@ Attempt the quiz and get your score instantly.
 bash
 Copy
 Edit
-git clone https://github.com/your-username/quiz-exam.git
+git clone https://github.com/Shubham-mahadik05/Quiz-Exam-
 cd quiz-exam
 start basic-computer.html
 📌 Future Improvements (Optional)
